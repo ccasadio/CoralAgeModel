@@ -198,47 +198,87 @@ handles.seasonal_cycle_spline.String = num2str(seasonalCycleSpline);
 
 %%
 % Spline fit to data
-plot(handles.tab1,data(:,1),splined18O,'b-');
+plot(handles.tab1,data(:,1),data(:,2),'r-o','linewidth',.2,'markersize',3);
 hold(handles.tab1, 'on');
-plot(handles.tab1,data(:,1),data(:,2),'ko')
+plot(handles.tab1,data(:,1),splined18O,'k-','linewidth',1.4);
+title(handles.tab1, 'Spline Fit to Data');
 hold(handles.tab1, 'off');
 
 % Peaks on data
-currentAx = subplot(3,1,1,'parent',handles.tab2);
-plot(currentAx,data(:,1),data(:,2),'b-');
-hold(currentAx, 'on');
-plot(currentAx,inflectionPointsSpline(:,1),inflectionPointsSpline(:,2),'g*');
-hold(currentAx, 'off');
-currentAx = subplot(3,1,2,'parent',handles.tab2);
-plot(currentAx,data(:,1),data(:,2),'b-');
-hold(currentAx, 'on');
-plot(currentAx,inflectionPointsData2(:,1),inflectionPointsData2(:,2),'g*');
-hold(currentAx, 'off');
-currentAx = subplot(3,1,3,'parent',handles.tab2);
-plot(currentAx,data(:,1),data(:,2),'b-');
-hold(currentAx, 'on');
-plot(currentAx,inflectionPointsData1(:,1),inflectionPointsData1(:,2),'g*');
-hold(currentAx, 'off');
+ax(1) = subplot(3,1,1,'parent',handles.tab2);
+plot(ax(1),data(:,1),data(:,2),'b-');
+hold(ax(1), 'on');
+plot(ax(1),inflectionPointsSpline(:,1),inflectionPointsSpline(:,2),'g*');
+title(ax(1), 'Spline Inflection Points');
+hold(ax(1), 'off');
+ax(2) = subplot(3,1,2,'parent',handles.tab2);
+plot(ax(2),data(:,1),data(:,2),'b-');
+hold(ax(2), 'on');
+plot(ax(2),inflectionPointsData2(:,1),inflectionPointsData2(:,2),'g*');
+title(ax(2), '"Peaks" Inflection Points');
+hold(ax(2), 'off');
+ax(3) = subplot(3,1,3,'parent',handles.tab2);
+plot(ax(3),data(:,1),data(:,2),'b-');
+hold(ax(3), 'on');
+plot(ax(3),inflectionPointsData1(:,1),inflectionPointsData1(:,2),'g*');
+title(ax(3), 'Closest Data to Spline Inflection');
+hold(ax(3), 'off');
+
+linkaxes(ax);
+clear ax;
 
 % Seasonal Cycle
-plot(subplot(4,1,1,'parent',handles.tab3),data(:,1),data(:,2),'b-');
-bar(subplot(4,1,2,'parent',handles.tab3),(inflectionPointsData2(2:end,1)+inflectionPointsData2(1:(end-1),1))/2,diff(inflectionPointsData2(:,2)));
+ax(1) = subplot(4,1,1,'parent',handles.tab3);
+plot(ax(1),data(:,1),data(:,2),'b-');
+title(ax(1), 'Data');
+ax(3) = subplot(4,1,2,'parent',handles.tab3);
+bar(ax(3),(inflectionPointsData2(2:end,1)+inflectionPointsData2(1:(end-1),1))/2,diff(inflectionPointsData2(:,2)));
+title(ax(3), '"Peaks" Seasonal Cycle');
 try
-plot(subplot(4,1,3,'parent',handles.tab3),data(:,1),splined18O,'b-');
-bar(subplot(4,1,4,'parent',handles.tab3),(inflectionPointsSpline(2:end,1)+inflectionPointsSpline(1:(end-1),1))/2,diff(inflectionPointsSpline(:,2)));
+    ax(2) = subplot(4,1,3,'parent',handles.tab3);
+    plot(ax(2),data(:,1),splined18O,'b-');
+    title(ax(2), 'Spline');
+    ax(4) = subplot(4,1,4,'parent',handles.tab3);
+    bar(ax(4),(inflectionPointsSpline(2:end,1)+inflectionPointsSpline(1:(end-1),1))/2,diff(inflectionPointsSpline(:,2)));
+    title(ax(4), 'Spline Seasonal Cycle');
 catch e
-disp(e.message);
-[~, i] = unique(inflectionPointsSpline(2:end,1));
-disp(inflectionPointsSpline(not(ismember(1:numel(inflectionPointsSpline(2:end,1)),i)),1));
+    disp(e.message);
+    [~, i] = unique(inflectionPointsSpline(2:end,1));
+    disp(inflectionPointsSpline(not(ismember(1:numel(inflectionPointsSpline(2:end,1)),i)),1));
 end
 
+linkaxes(ax(1:2));
+linkaxes(ax(3:4));
+clear ax;
+
+
 % Peak to Peak
-plot(subplot(3,1,1,'parent',handles.tab4),data(:,1),data(:,2),'b-');
-plot(subplot(3,1,2,'parent',handles.tab4),inflectionPointsData1(:,1),inflectionPointsData1(:,2),'b-');
-plot(subplot(3,1,3,'parent',handles.tab4),inflectionPointsData2(:,1),inflectionPointsData2(:,2),'b-');
+ax(1) = subplot(3,1,1,'parent',handles.tab4);
+plot(ax(1),data(:,1),data(:,2),'b-');
+title(ax(1), 'Data');
+ax(2) = subplot(3,1,2,'parent',handles.tab4);
+plot(ax(2),inflectionPointsData1(:,1),inflectionPointsData1(:,2),'b-');
+title(ax(2), 'Spline Peak to Peak');
+ax(3) = subplot(3,1,3,'parent',handles.tab4);
+plot(ax(3),inflectionPointsData2(:,1),inflectionPointsData2(:,2),'b-');
+title(ax(3), '"Peaks" Peak to Peak');
+
+linkaxes(ax);
+clear ax;
 
 % Desctiptive stats
-histogram(subplot(3,2,1,'parent',handles.tab5),data(:,2));
-histogram(subplot(3,2,2,'parent',handles.tab5),splined18O);
-histogram(subplot(3,2,3,'parent',handles.tab5),abs(diff(inflectionPointsData2(:,2))));
-histogram(subplot(3,2,4,'parent',handles.tab5),abs(diff(inflectionPointsSpline(:,2))));
+ax(1) = subplot(3,2,1,'parent',handles.tab5);
+ax(2) = subplot(3,2,2,'parent',handles.tab5);
+ax(3) = subplot(3,2,3,'parent',handles.tab5);
+ax(4) = subplot(3,2,4,'parent',handles.tab5);
+histogram(ax(1),data(:,2), 'Normalization', 'probability');
+histogram(ax(2),splined18O, 'Normalization', 'probability');
+histogram(ax(3),abs(diff(inflectionPointsData2(:,2))), 'Normalization', 'probability');
+histogram(ax(4),abs(diff(inflectionPointsSpline(:,2))), 'Normalization', 'probability');
+
+ax(1).YLim = [0 .4];
+ax(2).YLim = [0 .4];
+ax(3).YLim = [0 .4];
+ax(4).YLim = [0 .4];
+
+clear ax;
