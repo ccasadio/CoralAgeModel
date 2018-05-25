@@ -1,20 +1,12 @@
-function [  ] = corallinagemodel( inputData )
+function [out] = corallinagemodel( inputData )
 %UNTITLED2 Summary of this function goes here
 %   Detailed explanation goes here
 
-figure;
 [pow,w] = pwelch(inputData(:,2));
-plot(w,pow);
-hold on;
 [~, loc] = findpeaks(pow, w, 'SortStr', 'descend','MinPeakHeight',.1);%'NPeaks', 1,
-ppy = 2*pi/loc(1)
+ppy = 2*pi/loc(1);
 
-figure;
 out = linearAgeModel(inputData,ppy,2.7);
-plot(inputData(:,1),inputData(:,2),'k*');
-hold on;
-plot(out(:,1)+2/24,out(:,2),'ro');
-
 end
 
 function [data] = linearAgeModel(inputData, numberpointsperyear, splinesensitivity)
