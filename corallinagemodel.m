@@ -3,7 +3,7 @@ function [out] = corallinagemodel( inputData )
 %   Detailed explanation goes here
 
 [pow,w] = pwelch(inputData(:,2));
-[~, loc] = findpeaks(pow, w, 'SortStr', 'descend','MinPeakHeight',.1);%'NPeaks', 1,
+[~, loc] = findpeaks(pow, w, 'SortStr', 'descend');%'NPeaks', 1,
 loc = 2*pi./loc;
 loc = loc((loc < 36) & (loc > 3));
 ppy = loc(1);
