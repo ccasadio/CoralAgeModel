@@ -4,7 +4,10 @@ function [out] = corallinagemodel( inputData )
 
 [pow,w] = pwelch(inputData(:,2));
 [~, loc] = findpeaks(pow, w, 'SortStr', 'descend','MinPeakHeight',.1);%'NPeaks', 1,
-ppy = 2*pi/loc(1);
+loc = (2*pi)./loc;
+loc = loc(loc < 25);
+loc = loc(loc > 5);
+ppy = loc(1);
 
 out = linearAgeModel(inputData,ppy,2.7);
 end
