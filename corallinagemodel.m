@@ -20,11 +20,13 @@ catch
     ppy = 12;
 end
 
-out = linearAgeModel(inputData,ppy,2.7);
+out = linearAgeModel(inputData,ppy,3.7);
 end
 
 function [ts, criticalPoints] = linearAgeModel(data, pointsPerYear, splineSensitivity)
 requiredPointsPerYear = 12;
+
+debug = false;
 
 % Create new interpolated timeseries
 %  Constructing a cubic spline fit to the data using numknots (# of knots)
@@ -33,6 +35,14 @@ numknots = (length(data)/pointsPerYear)*splineSensitivity;
 
 warning('off','SPLINES:CHCKXYWP:NaNs');
 sp = spap2(numknots,3,data(:,1),data(:,2));
+
+if debug
+    figure;
+    plot(data(:,1),fnval(sp,data(:,1)),'k-');
+    hold on;
+    plot(data(:,1),data(:,2),'ro');
+    hold off;
+end
 
 % Calculating the first derivative of the spline fit
 firstder = fnder(sp,1);
@@ -53,7 +63,8 @@ end
 meanLength = mean(diff(intermediateX(:,1)));
 intermediateX = [(data(1,1):meanLength:intermediateX(1,1))'; intermediateX(:,1); (intermediateX(end,1):meanLength:data(end,1))'];
 
-% evaluate spline at each x value
-ts = [(0:1/12:((length(intermediateX)-1)/12))', fnval(sp, intermediateX(:,1))];
+% linearly interpolate data to 12 ppy
+ts(:,2) = interp1(data(:,1), data(:,2), intermediateX);
+ts(:,1) = 0:(1/requiredPointsPerYear):(length(ts(:,2))-1)/requiredPointsPerYear;
 criticalPoints = criticalPointsSpline;
 end
