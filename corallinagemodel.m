@@ -42,33 +42,42 @@ end
 if p.Results.numyears > 0
     
     i = 0;
-    lastSign = 'na';
-    greater = 'g';
-    less = 'l';
     delta = .1;
     proximity = p.Results.numyears - ts(end,1);
     sensitivity = p.Results.sensitivity;
     
     tolerance = 1;
     maxIterations = 25;
-    
-    % adapted binary search algorithm
-    while (abs(proximity) > tolerance) && (i < maxIterations)
-        if proximity > 0
-            if strcmp(lastSign,less)
-                delta = delta/2;
-            end
-            sensitivity = sensitivity + delta;
-            lastSign = greater;
-        else
-            if strcmp(lastSign,greater)
-                delta = delta/2;
-            end
-            sensitivity = sensitivity - delta;
-            lastSign = less;
-        end
+    bounds = [-inf inf];
+
+    %binary search algorith
+    while (i < maxIterations) && (abs(proximity) > tolerance)
         [ts, criticalPoints] = linearAgeModel(inputData, ppy, sensitivity*2.7, p.Results.endperiodicity);
         proximity = p.Results.numyears - ts(end,1);
+
+        if proximity > 0
+            if bounds(1) < sensitivity
+                bounds(1) = sensitivity;
+            end
+        else
+            if bounds(2) > sensitivity
+                bounds(2) = sensitivity;
+            end
+        end
+
+        if (sum(abs(bounds)) == inf)
+
+            if sum(bounds) > 0
+                sensitivity = sensitivity + delta;
+            else
+                sensitivity = sensitivity - delta;
+            end
+
+            delta = delta*2;
+
+        else
+            sensitivity = mean(bounds);
+        end
         i = i + 1;
     end
     
@@ -78,6 +87,7 @@ if p.Results.numyears > 0
 end
 
 end
+
 
 function [ts, criticalPoints] = linearAgeModel(data, pointsPerYear, splineSensitivity, requiredPointsPerYear)
 
