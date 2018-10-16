@@ -28,7 +28,8 @@ end
 meanLength = mean(diff(intermediateX(:,1)));
 intermediateX = [(data(1,1):meanLength:intermediateX(1,1))'; intermediateX(:,1); (intermediateX(end,1):meanLength:data(end,1))'];
 
-% evaluate spline at each x value
-ts = [(0:1/12:((length(intermediateX)-1)/12))', fnval(sp, intermediateX(:,1))];
+% linearly interpolate data to 12 ppy
+ts(:,2) = interp1(data(:,1), data(:,2), intermediateX);
+ts(:,1) = 0:(1/requiredPointsPerYear):(length(ts(:,2))-1)/requiredPointsPerYear;
 criticalPoints = criticalPointsSpline;
 end
